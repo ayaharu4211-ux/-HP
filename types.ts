@@ -70,6 +70,7 @@ export interface CompanyData {
     sectionTitle: string;
     sectionSub: string;
     applyBtn: string;
+    bgImage: string;
     jobs: JobItem[];
   };
   about: {
