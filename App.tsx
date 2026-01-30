@@ -45,7 +45,6 @@ const App: React.FC = () => {
 
   useEffect(() => {
     localStorage.setItem('nexus_corp_data_v1', JSON.stringify(data));
-    // ブラウザのタブ名を会社名に連動させる
     document.title = `${data.companyName} | 公式サイト`;
   }, [data]);
 
@@ -164,6 +163,7 @@ const App: React.FC = () => {
     const src = path.split('.').reduce((obj: any, key: any) => obj && obj[key], data);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [showOptions, setShowOptions] = useState(false);
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) {
@@ -172,6 +172,7 @@ const App: React.FC = () => {
         reader.readAsDataURL(file);
       }
     };
+
     const openOptions = (e: React.MouseEvent) => {
       if (!isAdmin) return;
       e.preventDefault();
@@ -179,14 +180,17 @@ const App: React.FC = () => {
       setShowOptions(true);
       setIsEditingImage(true);
     };
+
     const closeOptions = () => { setShowOptions(false); setIsEditingImage(false); };
+
     if (!isAdmin) return <img src={src || 'https://via.placeholder.com/800x600'} alt={alt} className={className} />;
+
     return (
-      <div className={`relative group/img w-full h-full cursor-pointer ${showOptions ? 'z-[1000]' : ''}`} onClick={openOptions}>
+      <div className={`relative group/img w-full h-full cursor-pointer overflow-hidden ${showOptions ? 'z-[9999]' : 'z-10'}`} onClick={openOptions}>
         <img src={src || 'https://via.placeholder.com/800x600'} alt={alt} className={`${className} transition-all ${!showOptions ? 'group-hover/img:brightness-75' : ''}`} />
         {!showOptions && (
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity pointer-events-none">
-            <div className="bg-white/90 text-slate-900 px-4 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-2xl">CLICK TO CHANGE</div>
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity pointer-events-none bg-black/20">
+            <div className="bg-white/90 text-slate-900 px-4 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase shadow-2xl">画像を編集</div>
           </div>
         )}
         {showOptions && (
@@ -320,3 +324,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+
