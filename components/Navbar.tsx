@@ -31,9 +31,10 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
   const transparent = !isScrolled && currentPath === 'home';
   const activeStyle = isEditingImage ? 'opacity-40' : 'opacity-100';
   
-  // 背景が透明な時は「白」、スクロール後や他ページでは「黒」を避けた「ネイビーブルー」
-  const textColor = transparent && !isMenuOpen ? 'text-white' : 'text-indigo-600';
-  const shadowStyle = transparent ? 'drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]' : '';
+  // ユーザーの要望により、常に「白」に固定。
+  // 白背景でも見えるように、!重要度フラグと強力な影（drop-shadow）を組み合わせています。
+  const textColor = '!text-white';
+  const shadowStyle = 'drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)] drop-shadow-[0_5px_15px_rgba(0,0,0,0.4)]';
 
   return (
     <>
@@ -66,8 +67,9 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
               <button 
                 key={item.href} onClick={() => !isEditingImage && handleNavigate(item.href)}
                 disabled={isEditingImage}
-                className={`text-[10px] font-bold tracking-[0.3em] uppercase transition-all duration-300 hover:opacity-100 ${textColor} ${
-                  currentPath === item.href ? 'border-b border-current opacity-100' : 'opacity-60'
+                // ナビゲーションメニューも会社名に合わせて調整
+                className={`text-[10px] font-bold tracking-[0.3em] uppercase transition-all duration-300 hover:opacity-100 ${textColor} ${shadowStyle} ${
+                  currentPath === item.href ? 'border-b border-white opacity-100' : 'opacity-80'
                 }`}
               >
                 {item.label}
@@ -80,26 +82,26 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
             className="md:hidden z-[110] p-2"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            <i className={`fa-solid ${isMenuOpen ? 'fa-xmark' : 'fa-bars-staggered'} text-xl sm:text-2xl ${textColor}`}></i>
+            <i className={`fa-solid ${isMenuOpen ? 'fa-xmark' : 'fa-bars-staggered'} text-xl sm:text-2xl ${textColor} ${shadowStyle}`}></i>
           </button>
         </div>
       </nav>
 
       {/* Fullscreen Mobile Menu */}
-      <div className={`fixed inset-0 bg-white z-[90] transition-transform duration-500 md:hidden ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}>
+      <div className={`fixed inset-0 bg-slate-900 z-[90] transition-transform duration-500 md:hidden ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}>
         <div className="flex flex-col items-center justify-center h-full gap-8 px-6">
           {NAV_ITEMS.map((item) => (
             <button 
               key={item.href} 
               onClick={() => handleNavigate(item.href)}
               className={`text-xl font-bold tracking-[0.2em] uppercase transition-all ${
-                currentPath === item.href ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-400'
+                currentPath === item.href ? 'text-white border-b-2 border-white' : 'text-slate-500'
               }`}
             >
               {item.label}
             </button>
           ))}
-          <div className="mt-12 text-[10px] tracking-[0.4em] text-slate-300 font-bold uppercase">
+          <div className="mt-12 text-[10px] tracking-[0.4em] text-slate-500 font-bold uppercase">
             © {data.companyName}
           </div>
         </div>
