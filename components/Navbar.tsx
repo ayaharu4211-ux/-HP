@@ -1,5 +1,4 @@
 
-
 import React, { useState, useEffect } from 'react';
 import { NAV_ITEMS } from '../constants';
 import { PageId, CompanyData } from '../types';
@@ -32,8 +31,9 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
   const transparent = !isScrolled && currentPath === 'home';
   const activeStyle = isEditingImage ? 'opacity-40' : 'opacity-100';
   
-  // ユーザーの要望により、常に黒（slate-900）に固定。!重要度フラグで確実に適用。
-  const textColor = '!text-slate-900';
+  // 「黒」は嫌とのことでしたので、大企業らしい信頼感のある「濃紺（Indigo 950）」を採用しました。
+  // これにより、背景が白でもはっきりと視認でき、かつ高級感が出ます。
+  const textColor = '!text-indigo-950';
 
   return (
     <>
@@ -50,10 +50,10 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
                   onClick={(e) => e.stopPropagation()}
                   onChange={(e) => updateData('companyName', e.target.value)}
                   disabled={isEditingImage}
-                  className={`text-xs sm:text-lg md:text-3xl font-bold tracking-[0.1em] md:tracking-[0.2em] bg-transparent border-b border-dashed border-slate-300 outline-none luxury-serif whitespace-nowrap overflow-hidden text-ellipsis ${textColor}`}
+                  className={`text-xs sm:text-lg md:text-3xl font-bold tracking-[0.1em] md:tracking-[0.2em] bg-transparent border-b border-dashed border-slate-300 outline-none luxury-serif whitespace-nowrap overflow-hidden text-ellipsis ${textColor} drop-shadow-sm`}
                 />
               ) : (
-                <span className={`text-xs sm:text-lg md:text-3xl font-bold tracking-[0.1em] md:tracking-[0.2em] luxury-serif uppercase transition-colors duration-500 whitespace-nowrap overflow-hidden text-ellipsis ${textColor}`}>
+                <span className={`text-xs sm:text-lg md:text-3xl font-bold tracking-[0.1em] md:tracking-[0.2em] luxury-serif uppercase transition-colors duration-500 whitespace-nowrap overflow-hidden text-ellipsis ${textColor} drop-shadow-sm`}>
                   {data.companyName}
                 </span>
               )}
