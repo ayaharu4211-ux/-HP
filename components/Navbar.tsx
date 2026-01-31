@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { NAV_ITEMS } from '../constants';
 import { PageId, CompanyData } from '../types';
@@ -31,8 +32,8 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
   const transparent = !isScrolled && currentPath === 'home';
   const activeStyle = isEditingImage ? 'opacity-40' : 'opacity-100';
   
-  // ユーザーの要望により、常に黒（slate-900）に固定。透明な背景でも読みやすくするため。
-  const textColor = 'text-slate-900';
+  // ユーザーの要望により、常に黒（slate-900）に固定。!重要度フラグで確実に適用。
+  const textColor = '!text-slate-900';
 
   return (
     <>
