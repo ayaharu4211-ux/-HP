@@ -32,10 +32,11 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
   const activeStyle = isEditingImage ? 'opacity-40' : 'opacity-100';
   
   // 背景がヒーロー画像（透明）の時は「白」
-  // スクロール後や背景が白の時は、要望通り「グレー（Slate-700）」を採用
-  const textColor = (transparent && !isMenuOpen) ? 'text-white' : 'text-slate-700';
+  // スクロール後や背景が白の時は、要望通り「グレー（Gray-500）」を採用
+  // !重要度フラグを使用して、他のスタイルに上書きされないようにします
+  const textColor = (transparent && !isMenuOpen) ? 'text-white' : 'text-gray-500';
   
-  // 透明背景の時のみ、白文字を見えやすくするための影を付与
+  // 透明背景の時（白文字）のみ、視認性を高めるための影を付与
   const shadowStyle = (transparent && !isMenuOpen) ? 'drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]' : '';
 
   return (
@@ -96,13 +97,13 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
               key={item.href} 
               onClick={() => handleNavigate(item.href)}
               className={`text-xl font-bold tracking-[0.2em] uppercase transition-all ${
-                currentPath === item.href ? 'text-slate-900 border-b-2 border-slate-900' : 'text-slate-400'
+                currentPath === item.href ? 'text-gray-800 border-b-2 border-gray-800' : 'text-gray-400'
               }`}
             >
               {item.label}
             </button>
           ))}
-          <div className="mt-12 text-[10px] tracking-[0.4em] text-slate-300 font-bold uppercase">
+          <div className="mt-12 text-[10px] tracking-[0.4em] text-gray-300 font-bold uppercase">
             © {data.companyName}
           </div>
         </div>
