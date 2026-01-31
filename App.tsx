@@ -53,11 +53,9 @@ const App: React.FC = () => {
       console.warn("LocalStorage limit reached. Trying to clear history and optimize.");
       setHistory([]);
       try {
-        // 保存失敗時は履歴を捨てて再試行
         localStorage.setItem('nexus_corp_data_v1', JSON.stringify(data));
       } catch (e2) {
         console.error("Critical: Storage limit exceeded even without history.");
-        // 保存に失敗し続ける場合はアラートを1回だけ表示（無限ループ防止のためコンソールへ）
         if (isAdmin) {
           console.warn("画像の合計サイズがブラウザの限界(約5MB)を超えています。不要な画像を削除してください。");
         }
@@ -81,7 +79,6 @@ const App: React.FC = () => {
     });
   }, [pushToHistory]);
 
-  // 画像圧縮ユーティリティ: スマホ対応のため、より軽量な設定に変更
   const compressImage = (base64Str: string, maxWidth = 1024, quality = 0.5): Promise<string> => {
     return new Promise((resolve) => {
       const img = new Image();
@@ -90,17 +87,14 @@ const App: React.FC = () => {
         const canvas = document.createElement('canvas');
         let width = img.width;
         let height = img.height;
-
         if (width > maxWidth) {
           height = (maxWidth / width) * height;
           width = maxWidth;
         }
-
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, width, height);
-        // jpegで圧縮することで容量を劇的に削減
         resolve(canvas.toDataURL('image/jpeg', quality));
       };
     });
@@ -221,7 +215,6 @@ const App: React.FC = () => {
       if (file) {
         const reader = new FileReader();
         reader.onloadend = async () => {
-          // PCからでもスマホからでも強制的に圧縮
           const compressed = await compressImage(reader.result as string);
           updateData(path, compressed); 
           closeOptions(); 
@@ -303,13 +296,23 @@ const App: React.FC = () => {
               </div>
               <div className="space-y-4">
                 {data.news.map((item, idx) => (
-                  <div key={item.id} className="py-8 px-6 flex flex-col md:flex-row md:items-center gap-10 hover:bg-white transition-all rounded-2xl group relative">
-                    <div className="flex items-center gap-8 min-w-[200px]">
+                  <div key={item.id} className="py-8 px-6 flex flex-col md:flex-row md:items-center gap-6 md:gap-10 hover:bg-white transition-all rounded-2xl group relative">
+                    <div className="flex items-center gap-8 min-w-[200px] shrink-0">
                       <EditableText path={`news.${idx}.date`} className="text-slate-400 font-mono text-sm" />
                       <EditableText path={`news.${idx}.category`} className="text-[9px] font-bold tracking-widest px-3 py-1 bg-slate-900 text-white rounded" />
                     </div>
-                    <EditableText path={`news.${idx}.title`} className="text-slate-800 text-lg flex-1 font-medium" />
-                    {isAdmin && <div className="absolute top-1/2 -translate-y-1/2 right-6 opacity-0 group-hover:opacity-100 transition-opacity"><ListControls path="news" index={idx} listLength={data.news.length} /></div>}
+                    {/* 
+                      編集欄とボタンが被らないよう、flex-1のコンテナに右パディングを入れるか、
+                      ListControlsを並列のflex要素として配置します。
+                    */}
+                    <div className="flex-1 min-w-0">
+                      <EditableText path={`news.${idx}.title`} className="text-slate-800 text-lg font-medium block" />
+                    </div>
+                    {isAdmin && (
+                      <div className="md:opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                        <ListControls path="news" index={idx} listLength={data.news.length} />
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
