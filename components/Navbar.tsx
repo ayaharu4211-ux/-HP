@@ -30,6 +30,9 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
 
   const transparent = !isScrolled && currentPath === 'home';
   const activeStyle = isEditingImage ? 'opacity-40' : 'opacity-100';
+  
+  // 透明な時は白、スクロール後や他ページでは黒
+  const textColor = transparent && !isMenuOpen ? 'text-white' : 'text-slate-900';
 
   return (
     <>
@@ -46,24 +49,24 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
                   onClick={(e) => e.stopPropagation()}
                   onChange={(e) => updateData('companyName', e.target.value)}
                   disabled={isEditingImage}
-                  className={`text-xs sm:text-lg md:text-3xl font-bold tracking-[0.1em] md:tracking-[0.2em] bg-transparent border-b border-dashed border-slate-300 outline-none luxury-serif whitespace-nowrap overflow-hidden text-ellipsis text-slate-900`}
+                  className={`text-xs sm:text-lg md:text-3xl font-bold tracking-[0.1em] md:tracking-[0.2em] bg-transparent border-b border-dashed border-slate-300 outline-none luxury-serif whitespace-nowrap overflow-hidden text-ellipsis ${textColor}`}
                 />
               ) : (
-                <span className={`text-xs sm:text-lg md:text-3xl font-bold tracking-[0.1em] md:tracking-[0.2em] luxury-serif uppercase transition-colors duration-500 whitespace-nowrap overflow-hidden text-ellipsis text-slate-900`}>
+                <span className={`text-xs sm:text-lg md:text-3xl font-bold tracking-[0.1em] md:tracking-[0.2em] luxury-serif uppercase transition-colors duration-500 whitespace-nowrap overflow-hidden text-ellipsis ${textColor}`}>
                   {data.companyName}
                 </span>
               )}
             </div>
           </div>
 
-          {/* Desktop Nav - 文字色をslate-900（黒）に固定 */}
+          {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-10">
             {NAV_ITEMS.map((item) => (
               <button 
                 key={item.href} onClick={() => !isEditingImage && handleNavigate(item.href)}
                 disabled={isEditingImage}
-                className={`text-[10px] font-bold tracking-[0.3em] uppercase transition-all duration-300 hover:opacity-100 text-slate-900 ${
-                  currentPath === item.href ? 'border-b border-slate-900 opacity-100' : 'opacity-60'
+                className={`text-[10px] font-bold tracking-[0.3em] uppercase transition-all duration-300 hover:opacity-100 ${textColor} ${
+                  currentPath === item.href ? 'border-b border-current opacity-100' : 'opacity-60'
                 }`}
               >
                 {item.label}
@@ -71,12 +74,12 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
             ))}
           </div>
           
-          {/* Mobile Toggle - アイコン色をslate-900に固定 */}
+          {/* Mobile Toggle */}
           <button 
             className="md:hidden z-[110] p-2"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            <i className={`fa-solid ${isMenuOpen ? 'fa-xmark' : 'fa-bars-staggered'} text-xl sm:text-2xl text-slate-900`}></i>
+            <i className={`fa-solid ${isMenuOpen ? 'fa-xmark' : 'fa-bars-staggered'} text-xl sm:text-2xl ${textColor}`}></i>
           </button>
         </div>
       </nav>
