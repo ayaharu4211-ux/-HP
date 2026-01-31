@@ -13,12 +13,12 @@ const CareerPage = ({ data, isAdmin, updateData, EditableText, EditableImage, Li
             alt="Culture" 
           />
           
-          {/* テキストレイヤー: 影をさらに強力にし、明るい背景でも白文字をクッキリ表示 */}
+          {/* テキストレイヤー: 白文字に黒い枠（アウトライン）と強力なシャドウを適用 */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-6">
              <div className="pointer-events-auto">
                <EditableText 
                  path="careers.title" 
-                 className="luxury-serif text-3xl sm:text-5xl md:text-8xl text-white block text-center drop-shadow-[0_4px_10px_rgba(0,0,0,0.3)] drop-shadow-[0_15px_50px_rgba(0,0,0,0.5)]" 
+                 className="luxury-serif text-3xl sm:text-5xl md:text-8xl text-white block text-center [text-shadow:_1px_1px_0_#000,_-1px_-1px_0_#000,_1px_-1px_0_#000,_-1px_1px_0_#000,_0_10px_30px_rgba(0,0,0,0.8)]" 
                  element="h2" 
                />
              </div>
