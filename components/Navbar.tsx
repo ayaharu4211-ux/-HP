@@ -31,9 +31,9 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
   const transparent = !isScrolled && currentPath === 'home';
   const activeStyle = isEditingImage ? 'opacity-40' : 'opacity-100';
   
-  // 「黒」は嫌とのことでしたので、大企業らしい信頼感のある「濃紺（Indigo 950）」を採用しました。
-  // これにより、背景が白でもはっきりと視認でき、かつ高級感が出ます。
-  const textColor = '!text-indigo-950';
+  // 背景が透明な時は「白」、スクロール後や他ページでは「黒」を避けた「ネイビーブルー」
+  const textColor = transparent && !isMenuOpen ? 'text-white' : 'text-indigo-600';
+  const shadowStyle = transparent ? 'drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]' : '';
 
   return (
     <>
@@ -50,10 +50,10 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
                   onClick={(e) => e.stopPropagation()}
                   onChange={(e) => updateData('companyName', e.target.value)}
                   disabled={isEditingImage}
-                  className={`text-xs sm:text-lg md:text-3xl font-bold tracking-[0.1em] md:tracking-[0.2em] bg-transparent border-b border-dashed border-slate-300 outline-none luxury-serif whitespace-nowrap overflow-hidden text-ellipsis ${textColor} drop-shadow-sm`}
+                  className={`text-xs sm:text-lg md:text-3xl font-bold tracking-[0.1em] md:tracking-[0.2em] bg-transparent border-b border-dashed border-slate-300 outline-none luxury-serif whitespace-nowrap overflow-hidden text-ellipsis ${textColor} ${shadowStyle}`}
                 />
               ) : (
-                <span className={`text-xs sm:text-lg md:text-3xl font-bold tracking-[0.1em] md:tracking-[0.2em] luxury-serif uppercase transition-colors duration-500 whitespace-nowrap overflow-hidden text-ellipsis ${textColor} drop-shadow-sm`}>
+                <span className={`text-xs sm:text-lg md:text-3xl font-bold tracking-[0.1em] md:tracking-[0.2em] luxury-serif uppercase transition-colors duration-500 whitespace-nowrap overflow-hidden text-ellipsis ${textColor} ${shadowStyle}`}>
                   {data.companyName}
                 </span>
               )}
@@ -93,7 +93,7 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
               key={item.href} 
               onClick={() => handleNavigate(item.href)}
               className={`text-xl font-bold tracking-[0.2em] uppercase transition-all ${
-                currentPath === item.href ? 'text-slate-900 border-b-2 border-slate-900' : 'text-slate-400'
+                currentPath === item.href ? 'text-indigo-600 border-b-2 border-indigo-600' : 'text-slate-400'
               }`}
             >
               {item.label}
