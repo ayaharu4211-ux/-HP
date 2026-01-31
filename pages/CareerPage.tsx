@@ -7,13 +7,12 @@ const CareerPage = ({ data, isAdmin, updateData, EditableText, EditableImage, Li
       <div className="max-w-7xl mx-auto px-6">
         {/* メインビジュアルセクション */}
         <div className="relative rounded-[2rem] md:rounded-[4rem] overflow-hidden aspect-[16/9] md:aspect-[21/9] mb-12 md:mb-32 corporate-shadow">
-          <EditableImage path="careers.bgImage" className="w-full h-full object-cover brightness-50" alt="Culture" />
+          <EditableImage path="careers.bgImage" className="w-full h-full object-cover brightness-100" alt="Culture" />
           
-          {/* テキストレイヤーがクリックを邪魔しないよう pointer-events-none を設定 */}
+          {/* テキストレイヤー: 背景の暗転をほぼゼロにし、文字自体の影で視認性を確保 */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-6">
-             {/* テキスト自体は編集できるよう pointer-events-auto に戻す */}
              <div className="pointer-events-auto">
-               <EditableText path="careers.title" className="luxury-serif text-3xl sm:text-5xl md:text-8xl text-white block text-center" element="h2" />
+               <EditableText path="careers.title" className="luxury-serif text-3xl sm:text-5xl md:text-8xl text-white block text-center drop-shadow-[0_10px_40px_rgba(0,0,0,0.6)]" element="h2" />
              </div>
           </div>
         </div>
