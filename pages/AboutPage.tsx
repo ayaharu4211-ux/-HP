@@ -23,14 +23,18 @@ const AboutPage = ({ data, isAdmin, updateData, EditableText, EditableImage, Lis
           
           <div className="space-y-4 md:space-y-12">
             {data.about.items.map((item: any, idx: number) => (
-              <div key={item.id} className="flex flex-col sm:flex-row items-baseline border-b border-slate-200 pb-4 md:pb-8 last:border-none relative group">
+              <div key={item.id} className="flex flex-col sm:flex-row items-baseline border-b border-slate-200 pb-4 md:pb-8 last:border-none relative group gap-4">
                 <div className="w-full sm:w-1/3 mb-1 sm:mb-0 flex-shrink-0">
                   <EditableText path={`about.items.${idx}.label`} className="text-[7px] md:text-[10px] font-bold tracking-[0.2em] uppercase text-slate-400 block text-left" />
                 </div>
-                <div className="w-full sm:w-2/3">
+                <div className="flex-1 min-w-0">
                   <EditableText path={`about.items.${idx}.value`} className="text-sm md:text-xl text-slate-800 block text-left font-normal sm:font-light break-words" element="div" />
                 </div>
-                {isAdmin && <div className="absolute top-0 right-0 opacity-0 group-hover:opacity-100 transition-opacity"><ListControls path="about.items" index={idx} listLength={data.about.items.length} /></div>}
+                {isAdmin && (
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                    <ListControls path="about.items" index={idx} listLength={data.about.items.length} />
+                  </div>
+                )}
               </div>
             ))}
           </div>
