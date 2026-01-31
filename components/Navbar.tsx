@@ -31,10 +31,12 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
   const transparent = !isScrolled && currentPath === 'home';
   const activeStyle = isEditingImage ? 'opacity-40' : 'opacity-100';
   
-  // ユーザーの要望により、常に「白」に固定。
-  // 白背景でも見えるように、!重要度フラグと強力な影（drop-shadow）を組み合わせています。
-  const textColor = '!text-white';
-  const shadowStyle = 'drop-shadow-[0_2px_5px_rgba(0,0,0,0.8)] drop-shadow-[0_5px_15px_rgba(0,0,0,0.4)]';
+  // 背景がヒーロー画像（透明）の時は「白」
+  // スクロール後や背景が白の時は、要望通り「グレー（Slate-700）」を採用
+  const textColor = (transparent && !isMenuOpen) ? 'text-white' : 'text-slate-700';
+  
+  // 透明背景の時のみ、白文字を見えやすくするための影を付与
+  const shadowStyle = (transparent && !isMenuOpen) ? 'drop-shadow-[0_2px_8px_rgba(0,0,0,0.5)]' : '';
 
   return (
     <>
@@ -51,7 +53,7 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
                   onClick={(e) => e.stopPropagation()}
                   onChange={(e) => updateData('companyName', e.target.value)}
                   disabled={isEditingImage}
-                  className={`text-xs sm:text-lg md:text-3xl font-bold tracking-[0.1em] md:tracking-[0.2em] bg-transparent border-b border-dashed border-slate-300 outline-none luxury-serif whitespace-nowrap overflow-hidden text-ellipsis ${textColor} ${shadowStyle}`}
+                  className={`text-xs sm:text-lg md:text-3xl font-bold tracking-[0.1em] md:tracking-[0.2em] bg-transparent border-b border-dashed border-slate-300 outline-none luxury-serif whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-500 ${textColor} ${shadowStyle}`}
                 />
               ) : (
                 <span className={`text-xs sm:text-lg md:text-3xl font-bold tracking-[0.1em] md:tracking-[0.2em] luxury-serif uppercase transition-colors duration-500 whitespace-nowrap overflow-hidden text-ellipsis ${textColor} ${shadowStyle}`}>
@@ -67,9 +69,8 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
               <button 
                 key={item.href} onClick={() => !isEditingImage && handleNavigate(item.href)}
                 disabled={isEditingImage}
-                // ナビゲーションメニューも会社名に合わせて調整
-                className={`text-[10px] font-bold tracking-[0.3em] uppercase transition-all duration-300 hover:opacity-100 ${textColor} ${shadowStyle} ${
-                  currentPath === item.href ? 'border-b border-white opacity-100' : 'opacity-80'
+                className={`text-[10px] font-bold tracking-[0.3em] uppercase transition-all duration-500 hover:opacity-100 ${textColor} ${shadowStyle} ${
+                  currentPath === item.href ? 'border-b border-current opacity-100' : 'opacity-70'
                 }`}
               >
                 {item.label}
@@ -82,26 +83,26 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
             className="md:hidden z-[110] p-2"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            <i className={`fa-solid ${isMenuOpen ? 'fa-xmark' : 'fa-bars-staggered'} text-xl sm:text-2xl ${textColor} ${shadowStyle}`}></i>
+            <i className={`fa-solid ${isMenuOpen ? 'fa-xmark' : 'fa-bars-staggered'} text-xl sm:text-2xl transition-colors duration-500 ${textColor} ${shadowStyle}`}></i>
           </button>
         </div>
       </nav>
 
       {/* Fullscreen Mobile Menu */}
-      <div className={`fixed inset-0 bg-slate-900 z-[90] transition-transform duration-500 md:hidden ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}>
+      <div className={`fixed inset-0 bg-white z-[90] transition-transform duration-500 md:hidden ${isMenuOpen ? 'translate-y-0' : '-translate-y-full'}`}>
         <div className="flex flex-col items-center justify-center h-full gap-8 px-6">
           {NAV_ITEMS.map((item) => (
             <button 
               key={item.href} 
               onClick={() => handleNavigate(item.href)}
               className={`text-xl font-bold tracking-[0.2em] uppercase transition-all ${
-                currentPath === item.href ? 'text-white border-b-2 border-white' : 'text-slate-500'
+                currentPath === item.href ? 'text-slate-900 border-b-2 border-slate-900' : 'text-slate-400'
               }`}
             >
               {item.label}
             </button>
           ))}
-          <div className="mt-12 text-[10px] tracking-[0.4em] text-slate-500 font-bold uppercase">
+          <div className="mt-12 text-[10px] tracking-[0.4em] text-slate-300 font-bold uppercase">
             © {data.companyName}
           </div>
         </div>
