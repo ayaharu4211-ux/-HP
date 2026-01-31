@@ -5,7 +5,7 @@ const CareerPage = ({ data, isAdmin, updateData, EditableText, EditableImage, Li
   return (
     <div className="pt-24 md:pt-48 pb-32 bg-white text-left">
       <div className="max-w-7xl mx-auto px-6">
-        {/* メインビジュアルセクション - 明るさを110%に引き上げ */}
+        {/* メインビジュアルセクション - 明るさを110%に維持し、視認性を極限まで追求 */}
         <div className="relative rounded-[2rem] md:rounded-[4rem] overflow-hidden aspect-[16/9] md:aspect-[21/9] mb-12 md:mb-32 corporate-shadow bg-slate-50">
           <EditableImage 
             path="careers.bgImage" 
@@ -13,12 +13,12 @@ const CareerPage = ({ data, isAdmin, updateData, EditableText, EditableImage, Li
             alt="Culture" 
           />
           
-          {/* テキストレイヤー: 白文字に黒い枠（アウトライン）と強力なシャドウを適用 */}
+          {/* テキストレイヤー: 8方向3pxの太い黒枠（アウトライン）を適用 */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-6">
              <div className="pointer-events-auto">
                <EditableText 
                  path="careers.title" 
-                 className="luxury-serif text-3xl sm:text-5xl md:text-8xl text-white block text-center [text-shadow:_1px_1px_0_#000,_-1px_-1px_0_#000,_1px_-1px_0_#000,_-1px_1px_0_#000,_0_10px_30px_rgba(0,0,0,0.8)]" 
+                 className="luxury-serif text-3xl sm:text-5xl md:text-8xl text-white block text-center [text-shadow:3px_3px_0_#000,-3px_-3px_0_#000,3px_-3px_0_#000,-3px_3px_0_#000,3px_0_0_#000,-3px_0_0_#000,0_3px_0_#000,0_-3px_0_#000,0_10px_40px_rgba(0,0,0,0.8)]" 
                  element="h2" 
                />
              </div>
