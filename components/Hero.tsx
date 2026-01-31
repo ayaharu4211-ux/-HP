@@ -1,31 +1,46 @@
 
 import React from 'react';
 
-const Hero = ({ data, isAdmin, EditableText, EditableImage, navigate, isEditingImage }: any) => {
+const Hero = ({ data, isAdmin, updateData, EditableText, EditableImage, navigate, isEditingImage }: any) => {
   const hasSubTitle = data.hero.subTitle && data.hero.subTitle.trim() !== '';
+  // 管理者なら常に表示（編集用）、一般ユーザーなら文字がある時だけ表示
   const showSubTitle = isAdmin || hasSubTitle;
+
+  const removeSubTitle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm('サブタイトル（バッジ部分）を削除しますか？')) {
+      updateData('hero.subTitle', '');
+    }
+  };
 
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden bg-white">
       <div className={`absolute inset-0 ${isEditingImage ? 'z-[999999]' : 'z-10'}`}>
-        {/* 明るさを100にし、不透明度も最大に。少しズームアウトして広がりを出す */}
         <EditableImage path="hero.bgImage" className="w-full h-full object-cover opacity-100 brightness-100 transition-all duration-1000" alt="Hero BG" />
       </div>
       
-      {/* 最小限のグラデーション: 文字の周りだけわずかに影を落とす */}
       <div className="absolute inset-0 bg-black/10 pointer-events-none z-[15]"></div>
       <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent pointer-events-none z-[15]"></div>
 
       <div className={`relative z-[20] max-w-7xl mx-auto px-4 w-full text-center transition-all duration-500 ${isEditingImage ? 'opacity-0 pointer-events-none' : ''}`}>
         <div className="max-w-6xl mx-auto flex flex-col items-center">
           {showSubTitle && (
-            <div className={`inline-block px-4 md:px-8 py-2 border border-white/40 rounded-full backdrop-blur-md hover:scale-105 transition-all mb-6 md:mb-12 shadow-lg ${!hasSubTitle && isAdmin ? 'opacity-50' : ''}`}>
+            <div className={`group/sub relative inline-block px-4 md:px-8 py-2 border border-white/40 rounded-full backdrop-blur-md hover:scale-105 transition-all mb-6 md:mb-12 shadow-lg ${!hasSubTitle && isAdmin ? 'opacity-30 border-dashed bg-red-500/10' : ''}`}>
               <EditableText path="hero.subTitle" className="text-white text-fit-sub font-bold uppercase block drop-shadow-md" hideOnImageEdit={true} />
+              
+              {isAdmin && (
+                <button 
+                  onClick={removeSubTitle}
+                  className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover/sub:opacity-100 transition-opacity text-[10px] shadow-xl z-[100]"
+                  title="この項目を削除"
+                >
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
+              )}
             </div>
           )}
           
           <div className="w-full overflow-hidden flex justify-center">
-            {/* 文字に強力なドロップシャドウを追加し、明るい背景でも読めるように */}
             <EditableText 
               path="hero.title" 
               className="text-white luxury-serif tracking-tight block text-fit-title drop-shadow-[0_10px_30px_rgba(0,0,0,0.5)]" 
