@@ -1,12 +1,26 @@
-
 import { NavItem, CompanyData } from './types';
 
 export const NAV_ITEMS: NavItem[] = [
-  { label: '会社概要', href: 'about' },
-  { label: '事業内容', href: 'services' },
-  { label: '実績紹介', href: 'portfolio' },
-  { label: '採用情報', href: 'careers' },
-  { label: 'お問い合わせ', href: 'contact' },
+  {
+    "label": "会社概要",
+    "href": "about"
+  },
+  {
+    "label": "事業内容",
+    "href": "services"
+  },
+  {
+    "label": "実績紹介",
+    "href": "portfolio"
+  },
+  {
+    "label": "採用情報",
+    "href": "careers"
+  },
+  {
+    "label": "お問い合わせ",
+    "href": "contact"
+  }
 ];
 
 export const INITIAL_DATA: CompanyData = {
@@ -135,4 +149,4 @@ export const INITIAL_DATA: CompanyData = {
     "addressLabel": "本社所在地"
   },
   "styles": {}
-}
+};
