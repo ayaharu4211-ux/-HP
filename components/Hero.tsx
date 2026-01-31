@@ -41,10 +41,10 @@ const Hero = ({ data, isAdmin, EditableText, EditableImage, navigate, isEditingI
           <div className="flex justify-center pt-8 md:pt-16">
             <button 
               onClick={() => navigate('services')}
-              className="px-8 md:px-12 py-3 md:py-5 bg-white text-slate-900 rounded-full text-[9px] md:text-xs font-bold tracking-[0.2em] md:tracking-[0.4em] uppercase hover:bg-slate-100 transition-all flex items-center gap-3 md:gap-4 group/btn shadow-2xl"
+              className="px-8 md:px-12 py-3 md:py-5 !bg-white !text-slate-900 rounded-full text-[9px] md:text-xs font-bold tracking-[0.2em] md:tracking-[0.4em] uppercase hover:bg-slate-100 transition-all flex items-center gap-3 md:gap-4 group/btn shadow-2xl relative z-30"
             >
-              <EditableText path="hero.btnText" className="inline-block" hideOnImageEdit={true} />
-              <i className="fa-solid fa-chevron-right text-[8px] md:text-xs group-hover/btn:translate-x-1 transition-transform"></i>
+              <EditableText path="hero.btnText" className="inline-block !text-slate-900" hideOnImageEdit={true} />
+              <i className="fa-solid fa-chevron-right text-[8px] md:text-xs !text-slate-900 group-hover/btn:translate-x-1 transition-transform"></i>
             </button>
           </div>
         </div>
