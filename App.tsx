@@ -36,7 +36,6 @@ const App: React.FC = () => {
     return INITIAL_DATA;
   });
 
-  // constants.tsx の内容すべてを生成
   const generateFullFileContent = useCallback((currentData: CompanyData) => {
     const jsonStr = JSON.stringify(currentData, null, 2);
     const navItemsStr = JSON.stringify(NAV_ITEMS, null, 2);
@@ -133,6 +132,7 @@ export const INITIAL_DATA: CompanyData = ${jsonStr};
       for (const key in obj) {
         let val = obj[key];
         if (typeof val === 'string' && val.startsWith('data:image')) {
+          // すべてを一括軽量化する際は、最小限のサイズに絞る
           val = await compressImage(val, 800, 0.3);
         } else if (typeof val === 'object') {
           val = await recursiveOptimize(val);
@@ -216,7 +216,7 @@ export const INITIAL_DATA: CompanyData = ${jsonStr};
     );
   };
 
-  const EditableImage = ({ path, className, alt }: any) => {
+  const EditableImage = ({ path, className, alt, maxWidth = 800, quality = 0.3 }: any) => {
     const src = path.split('.').reduce((obj: any, key: any) => obj && obj[key], data);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [showOptions, setShowOptions] = useState(false);
@@ -226,7 +226,7 @@ export const INITIAL_DATA: CompanyData = ${jsonStr};
       if (file) {
         const reader = new FileReader();
         reader.onloadend = async () => {
-          const compressed = await compressImage(reader.result as string);
+          const compressed = await compressImage(reader.result as string, maxWidth, quality);
           updateData(path, compressed); 
           closeOptions(); 
         };
@@ -256,8 +256,9 @@ export const INITIAL_DATA: CompanyData = ${jsonStr};
           <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-slate-900/90 backdrop-blur-xl" onClick={closeOptions}>
             <div className="bg-white rounded-[2rem] p-8 max-w-sm w-full text-center space-y-4" onClick={e => e.stopPropagation()}>
                <h4 className="luxury-serif text-xl">画像の変更</h4>
+               <p className="text-[10px] text-slate-400">{maxWidth}px / 画質 {quality} で保存されます</p>
                <button onClick={() => fileInputRef.current?.click()} className="w-full bg-slate-900 text-white py-4 rounded-xl text-xs font-bold tracking-widest uppercase">アップロード</button>
-               <button onClick={() => { const url = prompt('画像URLを入力', src); if (url) { updateData(path, url); closeOptions(); } }} className="w-full bg-slate-100 text-slate-600 py-4 rounded-xl text-xs font-bold tracking-widest uppercase">URLで指定 (容量削減)</button>
+               <button onClick={() => { const url = prompt('画像URLを入力', src); if (url) { updateData(path, url); closeOptions(); } }} className="w-full bg-slate-100 text-slate-600 py-4 rounded-xl text-xs font-bold tracking-widest uppercase">URLで指定 (推奨)</button>
                <button onClick={closeOptions} className="w-full text-slate-400 text-[10px] font-bold tracking-widest pt-2 uppercase">キャンセル</button>
                <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
             </div>
@@ -271,19 +272,6 @@ export const INITIAL_DATA: CompanyData = ${jsonStr};
     if (!isAdmin || isEditingImage) return null; 
     return (
       <div className="flex gap-1 p-1 bg-white/95 rounded-lg shadow-xl border border-slate-100 z-[100] relative" onClick={e => e.stopPropagation()}>
-        <button onClick={() => {
-          setData(prev => {
-            pushToHistory(prev);
-            const newData = JSON.parse(JSON.stringify(prev));
-            const parts = path.split('.');
-            let target = newData;
-            for (let i = 0; i < parts.length - 1; i++) target = target[parts[i]];
-            const arr = target[parts[parts.length - 1]];
-            const newIndex = -1; // logic inside moveItem but localized here for brevity if needed
-            // Use moveItem from parent if possible, or re-implement
-            return newData;
-          });
-        }} className="hidden">Move</button>
         <button onClick={() => { if(window.confirm('削除しますか？')) updateData(path, (path.split('.').reduce((o:any,i:any)=>o[i],data) as any[]).filter((_,id)=>id!==index)) }} className="w-6 h-6 flex items-center justify-center text-red-400 hover:text-red-600"><i className="fa-solid fa-trash text-[10px]"></i></button>
       </div>
     );
@@ -373,8 +361,8 @@ export const INITIAL_DATA: CompanyData = ${jsonStr};
             <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-start gap-4">
                <i className="fa-solid fa-circle-info text-blue-500 mt-1"></i>
                <div className="text-[11px] text-blue-800 leading-relaxed">
-                  <p className="font-bold mb-1">【重要】スマホでの反映不具合を防ぐために</p>
-                  <p>「全画像を一括軽量化」を実行してからコピーすることをお勧めします。画像が多すぎると `constants.tsx` ファイルが巨大になり、スマホで表示できなくなる場合があります。</p>
+                  <p className="font-bold mb-1">【画質に関するお知らせ】</p>
+                  <p>ヒーロー画像と採用情報の背景は、高品質（1920px）で保存されるよう設定されています。そのためファイルサイズが大きくなりやすいので、不要な場合は「一括軽量化」で全画像を最小限に抑えられます。</p>
                </div>
             </div>
 
