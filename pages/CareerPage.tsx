@@ -5,20 +5,25 @@ const CareerPage = ({ data, isAdmin, updateData, EditableText, EditableImage, Li
   return (
     <div className="pt-24 md:pt-48 pb-32 bg-white text-left">
       <div className="max-w-7xl mx-auto px-6">
-        {/* メインビジュアルセクション - 明るさを110%に維持し、視認性を極限まで追求 */}
         <div className="relative rounded-[2rem] md:rounded-[4rem] overflow-hidden aspect-[16/9] md:aspect-[21/9] mb-12 md:mb-32 corporate-shadow bg-slate-50">
+          {/* 採用背景画像も高画質設定（1920px / 画質 0.8） */}
           <EditableImage 
             path="careers.bgImage" 
+            maxWidth={1920}
+            quality={0.8}
             className="w-full h-full object-cover brightness-[1.1] contrast-[1.05] saturate-[1.1] transition-all duration-700" 
             alt="Culture" 
           />
           
-          {/* テキストレイヤー: 8方向3pxの太い黒枠（アウトライン）を適用 */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-6">
              <div className="pointer-events-auto">
                <EditableText 
                  path="careers.title" 
-                 className="luxury-serif text-3xl sm:text-5xl md:text-8xl text-white block text-center [text-shadow:3px_3px_0_#000,-3px_-3px_0_#000,3px_-3px_0_#000,-3px_3px_0_#000,3px_0_0_#000,-3px_0_0_#000,0_3px_0_#000,0_-3px_0_#000,0_10px_40px_rgba(0,0,0,0.8)]" 
+                 className="luxury-serif text-3xl sm:text-5xl md:text-8xl text-white block text-center"
+                 style={{
+                   WebkitTextStroke: '3px black',
+                   textShadow: '0 10px 30px rgba(0,0,0,0.8)'
+                 }}
                  element="h2" 
                />
              </div>
