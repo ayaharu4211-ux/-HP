@@ -3,7 +3,6 @@ import React from 'react';
 
 const Hero = ({ data, isAdmin, updateData, EditableText, EditableImage, navigate, isEditingImage }: any) => {
   const hasSubTitle = data.hero.subTitle && data.hero.subTitle.trim() !== '';
-  // 管理者なら常に表示（編集用）、一般ユーザーなら文字がある時だけ表示
   const showSubTitle = isAdmin || hasSubTitle;
 
   const removeSubTitle = (e: React.MouseEvent) => {
@@ -16,7 +15,14 @@ const Hero = ({ data, isAdmin, updateData, EditableText, EditableImage, navigate
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden bg-white">
       <div className={`absolute inset-0 ${isEditingImage ? 'z-[999999]' : 'z-10'}`}>
-        <EditableImage path="hero.bgImage" className="w-full h-full object-cover opacity-100 brightness-100 transition-all duration-1000" alt="Hero BG" />
+        {/* ヒーロー画像は高画質設定（1920px / 画質 0.8） */}
+        <EditableImage 
+          path="hero.bgImage" 
+          maxWidth={1920} 
+          quality={0.8} 
+          className="w-full h-full object-cover opacity-100 brightness-100 transition-all duration-1000" 
+          alt="Hero BG" 
+        />
       </div>
       
       <div className="absolute inset-0 bg-black/10 pointer-events-none z-[15]"></div>
