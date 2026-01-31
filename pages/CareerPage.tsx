@@ -3,16 +3,24 @@ import React from 'react';
 
 const CareerPage = ({ data, isAdmin, updateData, EditableText, EditableImage, ListControls, navigate }: any) => {
   return (
-    <div className="pt-24 md:pt-48 pb-32 bg-white">
+    <div className="pt-24 md:pt-48 pb-32 bg-white text-left">
       <div className="max-w-7xl mx-auto px-6">
-        {/* メインビジュアルセクション */}
-        <div className="relative rounded-[2rem] md:rounded-[4rem] overflow-hidden aspect-[16/9] md:aspect-[21/9] mb-12 md:mb-32 corporate-shadow">
-          <EditableImage path="careers.bgImage" className="w-full h-full object-cover brightness-100" alt="Culture" />
+        {/* メインビジュアルセクション - 明るさを110%に引き上げ */}
+        <div className="relative rounded-[2rem] md:rounded-[4rem] overflow-hidden aspect-[16/9] md:aspect-[21/9] mb-12 md:mb-32 corporate-shadow bg-slate-50">
+          <EditableImage 
+            path="careers.bgImage" 
+            className="w-full h-full object-cover brightness-[1.1] contrast-[1.05] saturate-[1.1] transition-all duration-700" 
+            alt="Culture" 
+          />
           
-          {/* テキストレイヤー: 背景の暗転をほぼゼロにし、文字自体の影で視認性を確保 */}
+          {/* テキストレイヤー: 影をさらに強力にし、明るい背景でも白文字をクッキリ表示 */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none p-6">
              <div className="pointer-events-auto">
-               <EditableText path="careers.title" className="luxury-serif text-3xl sm:text-5xl md:text-8xl text-white block text-center drop-shadow-[0_10px_40px_rgba(0,0,0,0.6)]" element="h2" />
+               <EditableText 
+                 path="careers.title" 
+                 className="luxury-serif text-3xl sm:text-5xl md:text-8xl text-white block text-center drop-shadow-[0_4px_10px_rgba(0,0,0,0.3)] drop-shadow-[0_15px_50px_rgba(0,0,0,0.5)]" 
+                 element="h2" 
+               />
              </div>
           </div>
         </div>
@@ -29,7 +37,7 @@ const CareerPage = ({ data, isAdmin, updateData, EditableText, EditableImage, Li
           {isAdmin && (
             <button 
               onClick={() => updateData('careers.jobs', [...data.careers.jobs, { id: 'j'+Date.now(), title: '新規募集', dept: '部署名', location: '勤務地', salary: '年俸 000万円' }])}
-              className="bg-slate-900 text-white px-6 md:px-8 py-2 md:py-3 rounded-full text-[8px] md:text-[10px] font-bold tracking-widest whitespace-nowrap self-start sm:self-auto"
+              className="bg-slate-900 text-white px-6 md:px-8 py-2 md:py-3 rounded-full text-[8px] md:text-[10px] font-bold tracking-widest whitespace-nowrap self-start sm:self-auto hover:bg-slate-800 transition-colors"
             >+ 募集追加</button>
           )}
         </div>
