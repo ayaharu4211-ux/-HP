@@ -31,8 +31,8 @@ const Navbar: React.FC<NavbarProps> = ({ navigate, currentPath, data, isAdmin, u
   const transparent = !isScrolled && currentPath === 'home';
   const activeStyle = isEditingImage ? 'opacity-40' : 'opacity-100';
   
-  // 透明な時は白、スクロール後や他ページでは黒
-  const textColor = transparent && !isMenuOpen ? 'text-white' : 'text-slate-900';
+  // ユーザーの要望により、常に黒（slate-900）に固定。透明な背景でも読みやすくするため。
+  const textColor = 'text-slate-900';
 
   return (
     <>
