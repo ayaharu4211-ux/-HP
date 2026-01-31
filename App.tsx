@@ -25,7 +25,6 @@ const App: React.FC = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // 最低限の構造チェック
         if (parsed && parsed.companyName) return parsed;
         return INITIAL_DATA;
       } catch (e) {
@@ -51,17 +50,21 @@ const App: React.FC = () => {
     try {
       localStorage.setItem('nexus_corp_data_v1', JSON.stringify(data));
     } catch (e) {
-      console.warn("LocalStorage limit reached. Trying to clear history to save space.");
-      // 容量制限に達した場合、履歴を消して再試行
+      console.warn("LocalStorage limit reached. Trying to clear history and optimize.");
       setHistory([]);
       try {
+        // 保存失敗時は履歴を捨てて再試行
         localStorage.setItem('nexus_corp_data_v1', JSON.stringify(data));
       } catch (e2) {
-        alert("画像のデータ量が大きすぎます。これ以上保存できません。一度他の画像を削除するか、小さな画像を使用してください。");
+        console.error("Critical: Storage limit exceeded even without history.");
+        // 保存に失敗し続ける場合はアラートを1回だけ表示（無限ループ防止のためコンソールへ）
+        if (isAdmin) {
+          console.warn("画像の合計サイズがブラウザの限界(約5MB)を超えています。不要な画像を削除してください。");
+        }
       }
     }
     document.title = `${data.companyName} | 公式サイト`;
-  }, [data]);
+  }, [data, isAdmin]);
 
   const updateData = useCallback((path: string, value: any) => {
     setData(prev => {
@@ -78,8 +81,8 @@ const App: React.FC = () => {
     });
   }, [pushToHistory]);
 
-  // 画像圧縮ユーティリティ
-  const compressImage = (base64Str: string, maxWidth = 1280, quality = 0.7): Promise<string> => {
+  // 画像圧縮ユーティリティ: スマホ対応のため、より軽量な設定に変更
+  const compressImage = (base64Str: string, maxWidth = 1024, quality = 0.5): Promise<string> => {
     return new Promise((resolve) => {
       const img = new Image();
       img.src = base64Str;
@@ -97,6 +100,7 @@ const App: React.FC = () => {
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, width, height);
+        // jpegで圧縮することで容量を劇的に削減
         resolve(canvas.toDataURL('image/jpeg', quality));
       };
     });
@@ -176,6 +180,15 @@ const App: React.FC = () => {
     }
   };
 
+  const handleReset = () => {
+    if (window.confirm('全てのデータを初期状態に戻しますか？（保存されている変更は消去されます）')) {
+      localStorage.removeItem('nexus_corp_data_v1');
+      setData(INITIAL_DATA);
+      setShowDataManager(false);
+      alert('初期化が完了しました。');
+    }
+  };
+
   const EditableText = ({ path, className, element = 'span', hideOnImageEdit = false }: any) => {
     const val = path.split('.').reduce((obj: any, key: any) => obj && obj[key], data);
     const Element = element as any;
@@ -206,13 +219,9 @@ const App: React.FC = () => {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) {
-        // 容量チェック（5MB以上なら警告）
-        if (file.size > 5 * 1024 * 1024) {
-          console.log("Large file detected, compression will be applied.");
-        }
         const reader = new FileReader();
         reader.onloadend = async () => {
-          // 自動圧縮を実行
+          // PCからでもスマホからでも強制的に圧縮
           const compressed = await compressImage(reader.result as string);
           updateData(path, compressed); 
           closeOptions(); 
@@ -245,7 +254,7 @@ const App: React.FC = () => {
           <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-slate-900/90 backdrop-blur-xl" onClick={closeOptions}>
             <div className="bg-white rounded-[2rem] p-10 max-w-sm w-full text-center space-y-6" onClick={e => e.stopPropagation()}>
                <h4 className="luxury-serif text-2xl text-slate-900">画像の変更</h4>
-               <p className="text-[10px] text-slate-400">※大きな画像は自動的に最適化されます</p>
+               <p className="text-[10px] text-slate-400">※スマホ表示最適化のため自動圧縮されます</p>
                <button onClick={() => fileInputRef.current?.click()} className="w-full bg-slate-900 text-white py-4 rounded-xl text-sm font-bold tracking-widest">PCからアップロード</button>
                <button onClick={() => { const url = prompt('画像URLを入力', src); if (url) { updateData(path, url); closeOptions(); } }} className="w-full bg-slate-100 text-slate-600 py-4 rounded-xl text-sm font-bold tracking-widest">URLで指定</button>
                <button onClick={closeOptions} className="w-full text-slate-400 text-xs font-bold uppercase tracking-widest pt-2">キャンセル</button>
@@ -347,16 +356,21 @@ const App: React.FC = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.4em] mb-4">Master Data Manager</p>
-                <h3 className="luxury-serif text-4xl text-slate-900">サイトデータの書き出し・復元</h3>
+                <h3 className="luxury-serif text-4xl text-slate-900">サイトデータの管理</h3>
               </div>
               <button onClick={() => setShowDataManager(false)} className="text-slate-400 hover:text-slate-900 text-3xl transition-colors"><i className="fa-solid fa-xmark"></i></button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
               <div className="space-y-6">
-                <h4 className="font-bold text-lg text-slate-800 flex items-center gap-3"><i className="fa-solid fa-file-export text-blue-500"></i>書き出し（本番反映用）</h4>
+                <h4 className="font-bold text-lg text-slate-800 flex items-center gap-3"><i className="fa-solid fa-file-export text-blue-500"></i>書き出し（バックアップ）</h4>
                 <div className="relative">
-                  <textarea readOnly value={JSON.stringify(data, null, 2)} className="w-full h-80 bg-slate-50 rounded-2xl p-6 font-mono text-[10px] text-slate-500 overflow-auto resize-none focus:outline-none border border-slate-100" />
+                  <textarea readOnly value={JSON.stringify(data, null, 2)} className="w-full h-64 bg-slate-50 rounded-2xl p-6 font-mono text-[10px] text-slate-500 overflow-auto resize-none focus:outline-none border border-slate-100" />
                   <button onClick={() => { navigator.clipboard.writeText(JSON.stringify(data, null, 2)); alert('クリップボードにコピーしました！'); }} className="absolute top-4 right-4 bg-white shadow-lg px-4 py-2 rounded-full text-[10px] font-bold text-slate-900 hover:bg-slate-50 active:scale-95 transition-all">COPY CODE</button>
+                </div>
+                <div className="p-6 bg-red-50 rounded-2xl border border-red-100">
+                   <p className="text-xs text-red-600 mb-4 font-bold">⚠️ トラブルシューティング</p>
+                   <p className="text-[10px] text-red-500 leading-relaxed mb-4">スマホで容量エラーが出る場合、一度リセットして初期状態に戻すことができます。</p>
+                   <button onClick={handleReset} className="text-[10px] font-bold bg-red-600 text-white px-6 py-3 rounded-xl uppercase hover:bg-red-700 transition-colors">サイトデータを初期化する</button>
                 </div>
               </div>
               <div className="space-y-6">
@@ -373,4 +387,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
