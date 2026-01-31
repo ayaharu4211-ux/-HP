@@ -24,8 +24,12 @@ const App: React.FC = () => {
     const saved = localStorage.getItem('nexus_corp_data_v1');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        // 最低限の構造チェック
+        if (parsed && parsed.companyName) return parsed;
+        return INITIAL_DATA;
       } catch (e) {
+        console.error("Data restoration failed, using initial data.", e);
         return INITIAL_DATA;
       }
     }
@@ -44,7 +48,18 @@ const App: React.FC = () => {
   }, [history]);
 
   useEffect(() => {
-    localStorage.setItem('nexus_corp_data_v1', JSON.stringify(data));
+    try {
+      localStorage.setItem('nexus_corp_data_v1', JSON.stringify(data));
+    } catch (e) {
+      console.warn("LocalStorage limit reached. Trying to clear history to save space.");
+      // 容量制限に達した場合、履歴を消して再試行
+      setHistory([]);
+      try {
+        localStorage.setItem('nexus_corp_data_v1', JSON.stringify(data));
+      } catch (e2) {
+        alert("画像のデータ量が大きすぎます。これ以上保存できません。一度他の画像を削除するか、小さな画像を使用してください。");
+      }
+    }
     document.title = `${data.companyName} | 公式サイト`;
   }, [data]);
 
@@ -62,6 +77,30 @@ const App: React.FC = () => {
       return newData;
     });
   }, [pushToHistory]);
+
+  // 画像圧縮ユーティリティ
+  const compressImage = (base64Str: string, maxWidth = 1280, quality = 0.7): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = base64Str;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth) {
+          height = (maxWidth / width) * height;
+          width = maxWidth;
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+    });
+  };
 
   const removeItem = useCallback((path: string, index: number) => {
     if (!window.confirm('この項目を完全に削除しますか？')) return;
@@ -167,8 +206,17 @@ const App: React.FC = () => {
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) {
+        // 容量チェック（5MB以上なら警告）
+        if (file.size > 5 * 1024 * 1024) {
+          console.log("Large file detected, compression will be applied.");
+        }
         const reader = new FileReader();
-        reader.onloadend = () => { updateData(path, reader.result); closeOptions(); };
+        reader.onloadend = async () => {
+          // 自動圧縮を実行
+          const compressed = await compressImage(reader.result as string);
+          updateData(path, compressed); 
+          closeOptions(); 
+        };
         reader.readAsDataURL(file);
       }
     };
@@ -197,6 +245,7 @@ const App: React.FC = () => {
           <div className="fixed inset-0 z-[10000] flex items-center justify-center p-6 bg-slate-900/90 backdrop-blur-xl" onClick={closeOptions}>
             <div className="bg-white rounded-[2rem] p-10 max-w-sm w-full text-center space-y-6" onClick={e => e.stopPropagation()}>
                <h4 className="luxury-serif text-2xl text-slate-900">画像の変更</h4>
+               <p className="text-[10px] text-slate-400">※大きな画像は自動的に最適化されます</p>
                <button onClick={() => fileInputRef.current?.click()} className="w-full bg-slate-900 text-white py-4 rounded-xl text-sm font-bold tracking-widest">PCからアップロード</button>
                <button onClick={() => { const url = prompt('画像URLを入力', src); if (url) { updateData(path, url); closeOptions(); } }} className="w-full bg-slate-100 text-slate-600 py-4 rounded-xl text-sm font-bold tracking-widest">URLで指定</button>
                <button onClick={closeOptions} className="w-full text-slate-400 text-xs font-bold uppercase tracking-widest pt-2">キャンセル</button>
